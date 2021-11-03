@@ -1,0 +1,19 @@
+.profile__avatar-container {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile__avatar-container:hover {
+    cursor: pointer;
+}
+
+.profile__avatar-container:hover .profile__avatar {
+    opacity: .4;
+    transition: .5s linear;
+}
+
+.profile__avatar-container:hover .profile__avatar-edit {
+    display: block;
+}

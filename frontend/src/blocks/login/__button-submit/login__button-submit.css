@@ -1,0 +1,15 @@
+.login__button-submit {
+    width: 358px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: 400;
+    border-radius: 2px;
+    margin-top: 216px;
+    padding: 0;
+}
+
+.login__button-submit:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: linear .3s;
+}

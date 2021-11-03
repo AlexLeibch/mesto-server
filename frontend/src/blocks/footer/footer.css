@@ -1,0 +1,17 @@
+.footer {
+    background: #0000;
+    width: 100%;
+    margin: 67px auto 60px;
+}
+
+@media screen and (max-width: 890px) {
+    .footer {
+        width: calc(100% - 250px);
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .footer {
+        width: calc(100% - 38px);
+    }
+}

@@ -1,0 +1,18 @@
+.header__link {
+    display: block;
+    font-size: 18px;
+    font-weight: 400;
+    color: white;
+    text-decoration: none;
+}
+
+.header__link:hover {
+    opacity: 0.6;
+    transition: 0.6s linear;
+}
+
+@media screen and (max-width: 373px) {
+    .header__link {
+        font-size: 14px;
+    }
+  }
