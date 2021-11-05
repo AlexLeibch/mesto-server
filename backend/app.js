@@ -5,6 +5,7 @@ console.log(process.env.NODE_ENV);
 const express = require('express');
 const mongoose = require('mongoose');
 const { Joi, celebrate, errors } = require('celebrate');
+const cors = require('cors');
 
 const bodyParser = require('body-parser');
 const NotFoundError = require('./errors/not-found-error');
@@ -16,19 +17,29 @@ const { login, createUser } = require('./controllers/users');
 
 const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const corsMiddleware = require('./middlewares/cors');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(requestLogger);
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'http://topmestobyalex.nomoredomains.xyz',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
 
-app.use(corsMiddleware);
+app.use('*', cors(options));
+
+app.use(requestLogger);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -56,8 +67,8 @@ app.post('/signup', celebrate({
 
 app.use(auth);
 
-app.use('/', usersRouter);
 app.use('/', cardsRouter);
+app.use('/', usersRouter);
 
 app.use((req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));

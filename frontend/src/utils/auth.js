@@ -1,4 +1,6 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+import api from './api';
+export const BASE_URL = 'http://localhost:3001';
+
 
 const checkResponse = (res) => {
     if (!res.ok) {
@@ -31,6 +33,7 @@ export const authorize = ({email, password}) => {
     .then((data) => {
         if(data.token) {
             localStorage.setItem('jwt', data.token)
+            api.updateHeaders();
             return data.token;
         }
     })

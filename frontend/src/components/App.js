@@ -31,7 +31,7 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
     React.useState(false);
   const [selectedCard, setSelectedCards] = React.useState({ isOpen: false });
-  const [currentUser, setCurrentUser] = React.useState({});
+  const [currentUser, setCurrentUser] = React.useState({_id: null, avatar: ''});
   const [cards, setCards] = React.useState([]);
   const [isToooltipOpen, setIsTooltipOpen] = React.useState(false);
 
@@ -40,52 +40,56 @@ function App() {
   const [email, setEmail] = React.useState("");
 
   React.useEffect(() => {
+    if (loggedIn) {
     api
       .getInitialCards()
-      .then((data) => {
-        setCards(data);
+      .then(cardList => {
+        setCards(cardList)
       })
       .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+      console.log(err)
+    })
+  }
+  }, [loggedIn]);
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    api
-      .changeLikeCardStatus(card._id, !isLiked)
+    const isLiked = card.likes.some((i) => i === currentUser._id);
+    console.log(currentUser._id)
+    console.log('isLiked',isLiked)
+    console.log(cards)
+    console.log(card._id)
+    api.changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
-        setCards((cards) =>
-          cards.map((currentCard) =>
-            currentCard._id === card._id ? newCard : currentCard
-          )
-        );
+        console.log('newCard', newCard)
+        setCards((cards) => cards.map((currentCard) => currentCard._id === card._id ? newCard : currentCard))
       })
       .catch((err) => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }
 
   function handleCardDelete(card) {
-    api
-      .removeCard(card._id)
+    api.removeCard(card._id)
       .then(() => {
         const newCards = cards.filter((elem) => elem !== card);
         setCards(newCards);
       })
       .catch((err) => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }
 
   React.useEffect(() => {
+    if (loggedIn) {
     api
       .getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
+      .then((user) => {
+        setCurrentUser(user.data);
+        console.log(user.data)
       })
       .catch((err) => console.log(err));
-  }, []);
+    }
+  }, [loggedIn]);
 
   React.useEffect(() => {
     const jwt = localStorage.getItem("jwt");
@@ -128,8 +132,11 @@ function App() {
   function handleUpdateUser({ name, about }) {
     api
       .editUserInfo(name, about)
-      .then((data) => {
-        setCurrentUser(data);
+      .then(() => {
+        const updateUser = {...currentUser};
+        updateUser.name = name;
+        updateUser.about = about;
+        setCurrentUser({...updateUser})
         closeAllPopups();
       })
       .catch((err) => {
@@ -141,8 +148,8 @@ function App() {
     api
       .addCard(name, link)
 
-      .then((data) => {
-        setCards([data, ...cards]);
+      .then((card) => {
+        setCards([card, ...cards]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -150,21 +157,22 @@ function App() {
       });
   }
 
-  function handleUpdateAvatar({ avatar }) {
-    api
-      .editUserAvatar(avatar)
+  function handleUpdateAvatar({avatar}) {
+    api.editUserAvatar(avatar)
       .then((data) => {
         setCurrentUser(data);
         closeAllPopups();
       })
       .catch((err) => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }
 
   function handleSignOut() {
+    setCurrentUser({_id: null, avatar: ''})
     setLoggedIn(false);
     localStorage.removeItem("jwt");
+    api.updateHeaders()
     setEmail("");
     history.push("/sign-in");
   }

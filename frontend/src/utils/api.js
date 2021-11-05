@@ -43,33 +43,33 @@
         return fetch(`${this._address}/users/me/avatar`, {
           method: 'PATCH',
           headers: this._headers,
-          body: JSON.stringify({
-            avatar: url
-          })
+          body: JSON.stringify({avatar: url})
         }).then(this._checkStatus)
       }
     
       likeCard(cardId) {
-        return fetch(`${this._address}/cards/likes/${cardId}`, {
-          method: 'PUT',
-          headers: this._headers
+        return fetch(`${this._address}/cards/${cardId}/likes`, {
+            method: 'PUT',
+            headers: this._headers
         }).then(this._checkStatus)
-      }
+    }
 
-      changeLikeCardStatus(cardId, isLiked) {
-        if (isLiked) {
-          return this.likeCard(cardId) 
-        } else {
-          return this.dislikeCard(cardId)
-        }
-      }
-    
-      dislikeCard(cardId) {
-        return fetch(`${this._address}/cards/likes/${cardId}`, {
+    dislikeCard(cardId) {
+      return fetch(`${this._address}/cards/${cardId}/likes`, {
           method: 'DELETE',
           headers: this._headers
-        }).then(this._checkStatus)
+      }).then(this._checkStatus)
+  }
+      
+      changeLikeCardStatus(cardId, isLiked) {
+        console.log('cardId', cardId)
+        if (isLiked) {
+          return this.dislikeCard(cardId) 
+        } else {
+          return this.likeCard(cardId)
+        }
       }
+      
     
       removeCard(cardId) {
         return fetch(`${this._address}/cards/${cardId}`, {
@@ -77,6 +77,14 @@
           headers: this._headers
         }).then(this._checkStatus)
       }
+
+      updateHeaders() {
+        this._headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        }
+      }
+
       _checkStatus(res) {
         if (!res.ok) {
           return Promise.reject(`Ошибка ${res.status}`);
@@ -87,9 +95,9 @@
 
 
     const api = new Api({
-      address: 'https://mesto.nomoreparties.co/v1/cohort-26',
+      address: 'http://localhost:3001',
       headers: {
-        authorization: '6a8d306b-88c2-4559-b9fb-ed6535e42e98',
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
         'Content-type': 'application/json'
       }
     })

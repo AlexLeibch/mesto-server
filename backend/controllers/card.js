@@ -46,7 +46,10 @@ const deleteCard = (req, res, next) => {
           .catch(next);
       }
     })
-    .catch(next);
+    .catch((err) => {
+      console.log('catch_card', err.message);
+      next(err);
+    });
 };
 
 const likeCard = (req, res, next) => {
@@ -58,18 +61,25 @@ const likeCard = (req, res, next) => {
       res.send(card);
     })
 
-    .catch(next);
+    .catch((err) => {
+      console.log('catch', err.message);
+      next(err);
+    });
 };
 
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
+      console.log('then', card);
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
       res.send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      console.log('catch', err.message);
+      next(err);
+    });
 };
 
 module.exports = {
